@@ -18,16 +18,24 @@ array, then arraySize contains its size */
     // If this is an array, then size specifies
     // the size of the array.
 
-    PtrDetails(void)
-    {
-        // TODO: Implement PtrDetails
-    }
+    /* @param ptr - pointer to memory
+       @param size - size of eventual array in memory ptr
+       if size > 0 isArray is set to true */
+    PtrDetails(T* ptr, T size = 0):memPtr(ptr), arraySize(size){
+        if (size > 0) isArray = true;
+        else isArray = false;
+    };
 };
 // Overloading operator== allows two class objects to be compared.
 // This is needed by the STL list class.
-template <class T>
-bool operator==(const PtrDetails<T> &ob1,
-                const PtrDetails<T> &ob2)
+template <class T> 
+bool operator==(const PtrDetails<T> &obj_1,
+                const PtrDetails<T> &obj_2)
 {
-    // TODO: Implement operator==
+    bool comp = true;
+    if (obj_1.memPtr != obj_2.memPtr) return false;
+    // TODO
+    // if (obj_1->isArray != obj_2->isArray) return false;
+    // if (obj_1->arraySize != obj_2->arraySize) return false;
+    return comp;
 }

@@ -1,6 +1,5 @@
 // This class defines an element that is stored
 // in the garbage collection information list.
-//
 template <class T>
 class PtrDetails
 {
@@ -8,13 +7,13 @@ class PtrDetails
     unsigned refcount; // current reference count
     T *memPtr;         // pointer to allocated memory
     /* isArray is true if memPtr points
-to an allocated array. It is false
-otherwise. */
+       to an allocated array. It is false
+       otherwise. */
     bool isArray; // true if pointing to array
     /* If memPtr is pointing to an allocated
-array, then arraySize contains its size */
+       array, then arraySize contains its size */
     unsigned arraySize; // size of array
-    // Here, mPtr points to the allocated memory.
+    // Here, memPtr points to the allocated memory.
     // If this is an array, then size specifies
     // the size of the array.
 
@@ -24,6 +23,7 @@ array, then arraySize contains its size */
     PtrDetails(T* ptr, T size = 0):memPtr(ptr), arraySize(size){
         if (size > 0) isArray = true;
         else isArray = false;
+        refcount = 0;
     };
 };
 // Overloading operator== allows two class objects to be compared.
@@ -34,8 +34,7 @@ bool operator==(const PtrDetails<T> &obj_1,
 {
     bool comp = true;
     if (obj_1.memPtr != obj_2.memPtr) return false;
-    // TODO
-    // if (obj_1->isArray != obj_2->isArray) return false;
-    // if (obj_1->arraySize != obj_2->arraySize) return false;
+    if (obj_1.isArray != obj_2.isArray) return false;
+    if (obj_1.arraySize != obj_2.arraySize) return false;
     return comp;
 }

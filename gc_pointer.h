@@ -55,9 +55,7 @@ public:
     Pointer &operator=(Pointer &rv);
     // Return a reference to the object pointed
     // to by this Pointer.
-    T &operator*(){
-        return *addr;
-    }
+    T &operator*(){ return *addr; }
     // Return the address being pointed to.
     T *operator->() { return addr; }
     // Return a reference to the object at the
@@ -106,19 +104,17 @@ Pointer<T,size>::Pointer(T *t){
         atexit(shutdown);
     first = false;
 
-    std::cout << "Constructor " << size << " sizeof " << sizeof(t) << std::endl;
+    // check the given size and set the Pointer object's isArray field accordingly.
     if(size > 0) 
     {
-        std::cout << "    is Array " << std::endl;
-        this->isArray = true;
-        this->arraySize = size;
+        this->isArray = true;        
     }
+    else this->isArray = false;
+    this->arraySize = size;
 
-    // TODO check the given size and set the Pointer object's isArray field accordingly.
     // Implement Pointer constructor
     typename std::list<PtrDetails<T> >::iterator p;
-    this->addr = t;
-    p = findPtrInfo(addr);
+    p = findPtrInfo(t);
     
     if (p != refContainer.end())
     {
@@ -128,36 +124,32 @@ Pointer<T,size>::Pointer(T *t){
     {
         // store pointer in the garbage collection list
         PtrDetails<T> newPtr(t, size);
-        newPtr.refcount++;
         refContainer.push_back(newPtr);
     }
-    
+
+    this->addr = t;    
 }
 // Copy constructor.
 template< class T, int size>
 Pointer<T,size>::Pointer(const Pointer &ob){
-    std::cout << "Copy Constructor " <<  std::endl;
     typename std::list<PtrDetails<T> >::iterator p;
-    p = findPtrInfo(addr);
-    typename std::list<PtrDetails<T> >::iterator p1;
-    p1 = findPtrInfo(ob.addr);
+    p = findPtrInfo(ob.addr);
 
     // Implement copy constructor
-    p->memPtr = p1->memPtr;
+    addr = ob.addr;
     
     // increment ref count
     p->refcount++;
-    p1->refcount--;
         
     // decide whether it is an array
-    p->isArray = ob.isArray;
-    p->arraySize = ob.arraySize;
+    arraySize = ob.arraySize;
+    if (arraySize > 0) isArray = true;
+    else isArray = false;    
 }
 
 // Destructor for Pointer.
 template <class T, int size>
 Pointer<T, size>::~Pointer(){
-    std::cout << "Destructor " <<  std::endl;
     typename std::list<PtrDetails<T> >::iterator p;
     p = findPtrInfo(addr);
     
@@ -177,7 +169,6 @@ Pointer<T, size>::~Pointer(){
 // one object was freed.
 template <class T, int size>
 bool Pointer<T, size>::collect(){
-    std::cout << " collect" <<  std::endl;
     bool memfreed = false;
     typename std::list<PtrDetails<T> >::iterator p;
 
@@ -192,9 +183,7 @@ bool Pointer<T, size>::collect(){
             // Free memory unless the Pointer is null.
             if(p->memPtr)
             {
-                if(p->isArray) {delete[] p->memPtr;
-                 std::cout << "  is Array " <<  std::endl;
-                 }
+                if(p->isArray) delete[] p->memPtr;                 
                 else delete p->memPtr;
             }
             
@@ -210,7 +199,6 @@ bool Pointer<T, size>::collect(){
 // Overload assignment of pointer to Pointer.
 template <class T, int size>
 T *Pointer<T, size>::operator=(T *t){
-    std::cout << "Operator= * " <<  std::endl;
     typename std::list<PtrDetails<T> >::iterator p;
     p = findPtrInfo(addr);
     // First, decrement the reference count
@@ -227,8 +215,6 @@ T *Pointer<T, size>::operator=(T *t){
     else
     {
         PtrDetails<T> newDet(t, size);
-        //TODO Do I need to do this?
-        // newDet.refcount++;
         refContainer.push_back(newDet);
     }
     
@@ -240,7 +226,6 @@ T *Pointer<T, size>::operator=(T *t){
 // Overload assignment of Pointer to Pointer.
 template <class T, int size>
 Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
-    std::cout << "Operator= & " <<  std::endl;
     typename std::list<PtrDetails<T> >::iterator p;
     p = findPtrInfo(addr);
     // First, decrement the reference count
@@ -250,21 +235,11 @@ Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
     // Then, increment the reference count of
     // the new address.
     p = findPtrInfo(rv.addr);
-    if (p != refContainer.end())
-    {
-        p->refcount++;
-    } 
-    else
-    {
-        PtrDetails<T> newDet(rv.addr, size);
-        //TODO Do I need to do this?
-        // newDet.refcount++;
-        refContainer.push_back(newDet);
-    }
+    p->refcount++;
     
-    // TODO increment ref count ?????
     // store the address.
     addr = rv.addr;
+
     return rv;
 }
 
@@ -273,10 +248,10 @@ template <class T, int size>
 void Pointer<T, size>::showlist(){
     typename std::list<PtrDetails<T> >::iterator p;
     std::cout << "refContainer<" << typeid(T).name() << ", " << size << ">:\n";
-    std::cout << "memPtr refcount value\n ";
+    std::cout << "memPtr refcount value\n";
     if (refContainer.begin() == refContainer.end())
     {
-        std::cout << " Container is empty!\n\n ";
+        std::cout << " Container is empty!\n\n";
     }
     for (p = refContainer.begin(); p != refContainer.end(); p++)
     {

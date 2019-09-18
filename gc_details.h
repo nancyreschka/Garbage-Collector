@@ -23,7 +23,7 @@ class PtrDetails
     PtrDetails(T* ptr, T size = 0):memPtr(ptr), arraySize(size){
         if (size > 0) isArray = true;
         else isArray = false;
-        refcount = 0;
+        refcount = 1;
     };
 };
 // Overloading operator== allows two class objects to be compared.
@@ -34,7 +34,5 @@ bool operator==(const PtrDetails<T> &obj_1,
 {
     bool comp = true;
     if (obj_1.memPtr != obj_2.memPtr) return false;
-    if (obj_1.isArray != obj_2.isArray) return false;
-    if (obj_1.arraySize != obj_2.arraySize) return false;
     return comp;
 }

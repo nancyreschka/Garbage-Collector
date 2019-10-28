@@ -1,4 +1,6 @@
-# CppND-Garbage-Collector
+# Garbage-Collector
+This is the code for my Udacity C++ Nanogdegree project Garbage Collector.
+
 The final project for this Memory Management course is to implement your own
 version of a smart pointer. You can think of this as implementing your own
 garbage collector, to use a concept from other programming languages. Building
@@ -20,9 +22,3 @@ last-compiled version. Adjust your code to resolve compiler errors and try again
 $ ./make
 $ ./compiled
 ```
-
-## Project TODO List:
-- Complete `Pointer` constructor
-- Complete `Pointer` `operator==`
-- Complete `Pointer` destructor
-- Complete `PtrDetails` class
